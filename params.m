@@ -11,3 +11,17 @@ C_Mq = -0.05; % coeff amortissement
 C_Md = 0.1 ;% coeff volet aero
 
 B = S*C_D0/m;
+
+%% conditions initiales
+v_ini = 6100;
+gamma_ini = deg2rad(-20.5);
+h_ini  = 120000;
+r_ini = h_ini + R_mars
+s_ini = 0;
+theta_ini = deg2rad(-80);
+q_ini = 0;
+
+v_fin1 = 300;
+v_fin2 = 250;
+h_fin = 10000;
+r_fin = h_fin + R_mars;

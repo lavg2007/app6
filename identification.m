@@ -55,7 +55,7 @@ disp([' H_s = ' num2str(hs) newline ' p_0 = ' num2str(p0)])
 % plot(t,pos_mes)
 
 
-clearvars variables acc_mes vel_mes pos_mes t D_aero P_dyn b m p p_lisse i 
+clearvars variables t D_aero P_dyn b m p_lisse i 
 
 function [b, m] = moindreCarre(xn, yn)
     A = [numel(xn) sum(xn); sum(xn) sum(xn.^2)];
