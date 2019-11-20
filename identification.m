@@ -11,18 +11,22 @@ params
 
 vel_mes(1) = -6100;
 for i = 2:numel(acc_mes)
-    vel_mes(i) = trapz(t(1:i),acc_mes(1:i)) + vel_mes(1);
+    vel_mes(i) = trapezoidale(t(1:i),acc_mes(1:i)) + vel_mes(1);
 end
 vel_mes = vel_mes';
-err_vel = integError(t,acc_mes)
+err_vel = integError(t,acc_mes);
 
 pos_mes(1) = 120000;
 for i = 2:numel(acc_mes)
-    pos_mes(i) = trapz(t(1:i),vel_mes(1:i)) + pos_mes(1);
+    pos_mes(i) = trapezoidale(t(1:i),vel_mes(1:i)) + pos_mes(1);
 end
 pos_mes = pos_mes';
-err_vel = integError(t,vel_mes)
+err_pos = integError(t,vel_mes);
 
+disp('--Erreurs d''intégration--')
+disp(['  vitesse    ' num2str(err_vel)])
+disp(['  position   ' num2str(err_pos)])
+disp(newline)
 
 %%
 D_aero = acc_mes*m;
@@ -45,7 +49,7 @@ plot(pos_mes, p_lisse)
 
 disp('--Identification des paramètres--')
 disp([' H_s = ' num2str(hs) newline ' p_0 = ' num2str(p0)])
-
+disp(newline)
 % figure
 % subplot(3,1,1)
 % plot(t,acc_mes)
@@ -54,8 +58,6 @@ disp([' H_s = ' num2str(hs) newline ' p_0 = ' num2str(p0)])
 % subplot(3,1,3)
 % plot(t,pos_mes)
 
-
-clearvars variables t D_aero P_dyn b m p_lisse i 
 
 function [b, m] = moindreCarre(xn, yn)
     A = [numel(xn) sum(xn); sum(xn) sum(xn.^2)];
@@ -66,7 +68,7 @@ function [b, m] = moindreCarre(xn, yn)
 end
 
 function F = trapezoidale(xn,yn)
-    h = mean(diff(xn));
+    h = 0.5;
     if numel(xn) == 1
        F = 0;
     elseif numel(xn) == 2;
@@ -77,7 +79,7 @@ function F = trapezoidale(xn,yn)
 end
 
 function err = integError(xn,yn)
-    h = mean(diff(xn));
+    h = 0.5;
     dy = diff(yn);
-    err = h^2*(dy(end)-dy(1))/12;
+    err = abs(h^2*(dy(end)-dy(1))/12);
 end
