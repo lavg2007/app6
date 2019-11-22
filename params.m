@@ -1,5 +1,5 @@
 m = 50; %masse de la capsule
-j = 1.5; %inertie de la capsule
+J = 1.5; %inertie de la capsule
 R_mars = 3397e03; %rayon de mars
 mu_mars = 42830e09; %param grav mars
 S = 0.8; % surface aerodynamique capsule
@@ -25,3 +25,8 @@ v_fin1 = 300;
 v_fin2 = 250;
 h_fin = 10000;
 r_fin = h_fin + R_mars;
+p0 = 0.0216;
+hs = 1.1004e+04;
+
+p_fin = p0*exp(-h_fin/hs);
+cond_ini = [v_ini gamma_ini h_ini s_ini theta_ini q_ini];

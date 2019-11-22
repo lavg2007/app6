@@ -138,8 +138,104 @@ Kp = 1/tau;
 wn = 20;
 zeta = 0.7;
 
-Kp = wn^2;
-Kd = 2*zeta*wn;
+Kp2 = wn^2;
+Kd2 = 2*zeta*wn;
+
+%% simulation 1
+
+tspan = [0 100];
+[t1 y1] = ode45('funcODE1', tspan, cond_ini);
+
+subplot(3,2,1)
+plot(t1,y1(:,1)')
+title('v')
+
+subplot(3,2,2)
+plot(t1,rad2deg(y1(:,2)))
+title('gamma')
+
+subplot(3,2,3)
+plot(t1,y1(:,3))
+title('h')
+
+subplot(3,2,4)
+plot(t1,y1(:,4))
+title('s')
+
+subplot(3,2,5)
+plot(t1,rad2deg(y1(:,5)))
+title('theta')
+
+
+subplot(3,2,6)
+plot(t1,rad2deg(y1(:,6)))
+title('q')
+
+%% simulation 2
+
+tspan = [0 110];
+[t2 y2] = ode45('funcODE2', tspan, cond_ini);
+
+figure
+subplot(3,2,1)
+plot(t2,y2(:,1))
+title('v')
+
+subplot(3,2,2)
+plot(t2,rad2deg(y2(:,2)))
+title('gamma')
+
+subplot(3,2,3)
+plot(t2,y2(:,3))
+title('h')
+
+subplot(3,2,4)
+plot(t2,y2(:,4))
+title('s')
+
+subplot(3,2,5)
+plot(t2,rad2deg(y2(:,5)))
+title('theta')
+ylim([-90 90])
+
+subplot(3,2,6)
+plot(t2,rad2deg(y2(:,6)))
+title('q')
+ylim([-90 90])
+
+%% simulation 3
+
+tspan = [0 121];
+[t3 y3] = ode45('funcODE3', tspan, cond_ini);
+
+figure
+subplot(3,2,1)
+plot(t3,y3(:,1))
+title('v')
+
+subplot(3,2,2)
+plot(t3,rad2deg(y3(:,2)))
+title('gamma')
+
+subplot(3,2,3)
+plot(t3,y3(:,3))
+title('h')
+
+subplot(3,2,4)
+plot(t3,y3(:,4))
+title('s')
+
+subplot(3,2,5)
+plot(t3,rad2deg(y3(:,5)))
+title('theta')
+ylim([-90 90])
+
+subplot(3,2,6)
+plot(t3,rad2deg(y3(:,6)))
+title('q')
+ylim([-90 90])
+
+
 %% Console
 
 
