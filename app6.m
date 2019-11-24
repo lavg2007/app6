@@ -2,7 +2,7 @@
 clearvars
 clc
 close all
-
+warning('off','all')
 
 identification
 
@@ -21,18 +21,35 @@ p_ini = rho(h_ini);
 RAA = @(v_i, gamma, p) v_i*exp(0.5*B*hs*(p-p_ini)/sin(gamma));
 
 % RAA a angle de -90 pour comparaison avec les russes
-v = RAA(v_ini, -90, p);
+v = RAA(v_ini, -90, p_mes);
+
+
+Pdyn_RAA = 0.5*p_mes.*v.^2;
+Daero_RAA = Pdyn_RAA*S*C_D0;
+acc_RAA = Daero_RAA/m;
 
 figure
-subplot(2,1,1)
+hold on
+plot(pos_mes,acc_mes)
+plot(pos_mes,acc_RAA)
+xlabel('Altitude (m)')
+ylabel('Accélération (m/s^2)')
+legend('Mesurée','RAA')
+grid on
+saveas(gcf, [pwd '\Figures\acc_mes_vs_RAA.png'])
+
+
+
+figure
 title('Vitesse vs Hauteur')
 hold on
-plot(pos_mes,-v)
-plot(pos_mes,vel_mes)
-legend('Théorique','Expérimentale')
-subplot(2,1,2)
-title('Erreur')
-plot(pos_mes,v+vel_mes)
+plot(pos_mes,abs(vel_mes))
+plot(pos_mes,v)
+legend('Mesurée','RAA')
+xlabel('Altitude (m)')
+ylabel('Vitesse (m/s)')
+saveas(gcf, [pwd '\Figures\vel_mes_vs_RAA.png'])
+
 
 
 %% loi de guidage (RAA + Grav)
@@ -90,13 +107,13 @@ v_max2 = RAA(v_ini,gamma_ref1,p_max2);
 h_test = [120000:-1:0];
 
 
-figure
-hold on
-plot(h_test, RAA(v_ini, gamma_ref1, rho(h_test)))
-plot(h_test, RAA(v_ini, gamma_ref2, rho(h_test)))
+% figure
+% hold on
+% plot(h_test, RAA(v_ini, gamma_ref1, rho(h_test)))
+% plot(h_test, RAA(v_ini, gamma_ref2, rho(h_test)))
 
 v_mean = mean([v_max1 v_max2]);
-t_lim_nom = (h_max1 - h_max2)/v_mean;
+t_lim_nom = (h_max2 - h_max1)/(v_mean*sin(gamma_ref1));
 
 % figure(5)
 % hold on
@@ -117,7 +134,7 @@ v_max2 = RAA(v_ini,gamma_ref2,p_max2);
 h_test = [120000:-1:0];
 
 v_mean = mean([v_max1 v_max2]);
-t_lim_ide = (h_max1 - h_max2)/v_mean;
+t_lim_ide = (h_max2 - h_max1)/(v_mean*sin(gamma_ref2));
 
 % figure(5)
 % hold on
@@ -141,100 +158,10 @@ zeta = 0.7;
 Kp2 = wn^2;
 Kd2 = 2*zeta*wn;
 
-%% simulation 1
 
-tspan = [0 100];
-[t1 y1] = ode45('funcODE1', tspan, cond_ini);
+%% Simulation
 
-subplot(3,2,1)
-plot(t1,y1(:,1)')
-title('v')
-
-subplot(3,2,2)
-plot(t1,rad2deg(y1(:,2)))
-title('gamma')
-
-subplot(3,2,3)
-plot(t1,y1(:,3))
-title('h')
-
-subplot(3,2,4)
-plot(t1,y1(:,4))
-title('s')
-
-subplot(3,2,5)
-plot(t1,rad2deg(y1(:,5)))
-title('theta')
-
-
-subplot(3,2,6)
-plot(t1,rad2deg(y1(:,6)))
-title('q')
-
-%% simulation 2
-
-tspan = [0 110];
-[t2 y2] = ode45('funcODE2', tspan, cond_ini);
-
-figure
-subplot(3,2,1)
-plot(t2,y2(:,1))
-title('v')
-
-subplot(3,2,2)
-plot(t2,rad2deg(y2(:,2)))
-title('gamma')
-
-subplot(3,2,3)
-plot(t2,y2(:,3))
-title('h')
-
-subplot(3,2,4)
-plot(t2,y2(:,4))
-title('s')
-
-subplot(3,2,5)
-plot(t2,rad2deg(y2(:,5)))
-title('theta')
-ylim([-90 90])
-
-subplot(3,2,6)
-plot(t2,rad2deg(y2(:,6)))
-title('q')
-ylim([-90 90])
-
-%% simulation 3
-
-tspan = [0 121];
-[t3 y3] = ode45('funcODE3', tspan, cond_ini);
-
-figure
-subplot(3,2,1)
-plot(t3,y3(:,1))
-title('v')
-
-subplot(3,2,2)
-plot(t3,rad2deg(y3(:,2)))
-title('gamma')
-
-subplot(3,2,3)
-plot(t3,y3(:,3))
-title('h')
-
-subplot(3,2,4)
-plot(t3,y3(:,4))
-title('s')
-
-subplot(3,2,5)
-plot(t3,rad2deg(y3(:,5)))
-title('theta')
-ylim([-90 90])
-
-subplot(3,2,6)
-plot(t3,rad2deg(y3(:,6)))
-title('q')
-ylim([-90 90])
-
+simulateur
 
 %% Console
 
@@ -242,5 +169,6 @@ ylim([-90 90])
 disp('Vitesses finales |      300 m/s |      250 m/s | ')  
 disp('--------------------------------------------------')
 disp(['Angle constant   | ' num2str(rad2deg(gamma_ref1)) ' deg | ' num2str(rad2deg(gamma_ref2)) ' deg |'])
-disp(['Tlim D > 2000N   |  ' num2str(t_lim_nom) ' s   |  ' num2str(t_lim_ide) ' s   |'])
+disp(['Tlim calculé     |  ' num2str(t_lim_nom) ' s   |  ' num2str(t_lim_ide) ' s   |'])
+disp(['Tlim mesuré      |  ' num2str(real(y2(end,7))) ' s   |  ' num2str(real(y3(end,7))) ' s   |'])
 disp(newline)

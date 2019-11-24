@@ -19,6 +19,7 @@ f(3) = y(1)*sin(y(2));
 f(4) = y(1)*cos(y(2))/r;
 f(5) = y(6);
 f(6) = M_aero/J;
+f(7) = D_aero > 2000;
 f = f';
 end
 

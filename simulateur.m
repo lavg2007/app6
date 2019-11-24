@@ -1,0 +1,237 @@
+%% simulation 1
+
+disp('Simulation 1...')  
+
+tspan = [0 100];
+[t1 y1] = ode45('funcODE1', tspan, cond_ini);
+
+figure
+
+subplot(3,2,1)
+plot(t1,y1(:,2))
+xlabel('Temps (s)')
+ylabel('Gamma (deg)')
+
+subplot(3,2,2)
+plot(y1(:,3),y1(:,1))
+xlabel('Altitude (m)')
+ylabel('Vitesse (m/s)')
+
+subplot(3,2,3)
+hold on
+plot(t1,y1(:,5))
+plot(t1,y1(:,5) - y1(:,2))
+xlabel('Temps (s)')
+ylabel('Angle (deg)')
+legend('\theta','\alpha')
+
+subplot(3,2,4)
+plot(t1,y1(:,6))
+xlabel('Temps (s)')
+ylabel('Vitesse angulaire (deg/s)')
+
+Pdyn_sim1 = 0.5*rho(y1(:,3)).*y1(:,1).^2;
+Daero_sim1 = Pdyn_sim1*S*C_D0;
+Laero_sim1 = Pdyn_sim1.*S.*C_La.*(y1(:,5)-y1(:,2));
+
+subplot(3,2,5)
+hold on
+plot(t1,Laero_sim1)
+plot(t1,Daero_sim1)
+xlabel('Temps (s)')
+ylabel('Force (N)')
+legend('Portance (L_{aero})', 'Trainée (D_{aero})')
+
+subplot(3,2,6)
+plot(t1,y1(:,7))
+xlabel('Temps (s)')
+title('\Delta t_{lim} à D_{aero} > 2000 N')
+saveas(gcf, [pwd '\Figures\sim1.png'])
+
+
+%% simulation 2
+
+disp('Simulation 2...')
+tspan = [0 108];
+[t2 y2] = ode45('funcODE2', tspan, cond_ini);
+
+
+
+%%
+hspan = [10 120];
+
+
+figure
+subplot(3,3,1)
+plot(t2,rad2deg(y2(:,2)))
+line(tspan, [rad2deg(gamma_ref1), rad2deg(gamma_ref1)])
+xlim(tspan)
+ylim([-25 -10])
+xlabel('Temps (s)')
+ylabel('\gamma (deg)')
+grid on
+
+subplot(3,3,2)
+plot(y2(:,3)/1000,rad2deg(y2(:,2)))
+xlabel('Altitude (km)')
+ylabel('\gamma (deg)')
+xlim(hspan)
+grid on
+
+subplot(3,3,3)
+plot(t2,y2(:,1))
+xlabel('Temps (s)')
+ylabel('Vitesse (m/s)')
+xlim(tspan)
+grid on
+
+subplot(3,3,4)
+plot(y2(:,3)/1000,y2(:,1))
+xlabel('Altitude (km)')
+ylabel('Vitesse (m/s)')
+xlim(hspan)
+grid on
+
+
+subplot(3,3,5)
+plot(t2,y2(:,3)/1000)
+xlabel('Temps (s)')
+ylabel('Altitude (km)')
+xlim(tspan)
+grid on
+
+subplot(3,3,6)
+hold on
+plot(t2,rad2deg(y2(:,5)))
+plot(t2,rad2deg(y2(:,5)-y2(:,2)))
+xlim(tspan)
+ylim([-90 90])
+xlabel('Temps (s)')
+ylabel('Angle (deg)')
+legend('\theta','\alpha')
+grid on
+
+subplot(3,3,7)
+plot(t2, rad2deg(y2(:,6)))
+xlabel('Temps (s)')
+ylabel('Vitesse angulaire (deg)')
+ylim([-90 90])
+xlim(tspan)
+grid on
+
+Pdyn_sim2 = 0.5*rho(y2(:,3)).*y2(:,1).^2;
+Daero_sim2 = Pdyn_sim2*S*C_D0;
+Laero_sim2 = Pdyn_sim2.*S.*C_La.*(y2(:,5)-y2(:,2));
+
+subplot(3,3,8)
+hold on
+plot(t2,Laero_sim2)
+plot(t2,Daero_sim2)
+xlabel('Temps (s)')
+ylabel('Force (N)')
+legend('Portance (L_{aero})', 'Trainée (D_{aero})')
+xlim(tspan)
+grid on
+
+subplot(3,3,9)
+plot(t2,y2(:,7))
+xlabel('Temps (s)')
+title('\Delta t_{lim} à D_{aero} > 2000 N')
+xlim(tspan)
+grid on
+
+saveas(gcf, [pwd '\Figures\sim2.png'])
+
+
+%% simulation 3
+
+
+disp('Simulation 3...')
+disp(newline)
+
+tspan = [0 121];
+[t3 y3] = ode45('funcODE3', tspan, cond_ini);
+
+hspan = [10 120];
+
+
+figure
+subplot(3,3,1)
+plot(t3,rad2deg(y3(:,2)))
+line(tspan, [rad2deg(gamma_ref2), rad2deg(gamma_ref2)])
+xlim(tspan)
+ylim([-25 -10])
+xlabel('Temps (s)')
+ylabel('\gamma (deg)')
+grid on
+
+subplot(3,3,2)
+plot(y3(:,3)/1000,rad2deg(y3(:,2)))
+xlabel('Altitude (km)')
+ylabel('\gamma (deg)')
+xlim(hspan)
+grid on
+
+subplot(3,3,3)
+plot(t3,y3(:,1))
+xlabel('Temps (s)')
+ylabel('Vitesse (m/s)')
+xlim(tspan)
+grid on
+
+subplot(3,3,4)
+plot(y3(:,3)/1000,y3(:,1))
+xlabel('Altitude (km)')
+ylabel('Vitesse (m/s)')
+xlim(hspan)
+grid on
+
+
+subplot(3,3,5)
+plot(t3,y3(:,3)/1000)
+xlabel('Temps (s)')
+ylabel('Altitude (km)')
+xlim(tspan)
+grid on
+
+subplot(3,3,6)
+hold on
+plot(t3,rad2deg(y3(:,5)))
+plot(t3,rad2deg(y3(:,5)-y3(:,2)))
+xlim(tspan)
+ylim([-90 90])
+xlabel('Temps (s)')
+ylabel('Angle (deg)')
+legend('\theta','\alpha')
+grid on
+
+subplot(3,3,7)
+plot(t3, rad2deg(y3(:,6)))
+xlabel('Temps (s)')
+ylabel('Vitesse angulaire (deg)')
+ylim([-90 90])
+xlim(tspan)
+grid on
+
+Pdyn_sim3 = 0.5*rho(y3(:,3)).*y3(:,1).^2;
+Daero_sim3 = Pdyn_sim3*S*C_D0;
+Laero_sim3 = Pdyn_sim3.*S.*C_La.*(y3(:,5)-y3(:,2));
+
+subplot(3,3,8)
+hold on
+plot(t3,Laero_sim3)
+plot(t3,Daero_sim3)
+xlabel('Temps (s)')
+ylabel('Force (N)')
+legend('Portance (L_{aero})', 'Trainée (D_{aero})')
+xlim(tspan)
+grid on
+
+subplot(3,3,9)
+plot(t3,y3(:,7))
+xlabel('Temps (s)')
+title('\Delta t_{lim} à D_{aero} > 2000 N')
+xlim(tspan)
+grid on
+
+saveas(gcf, [pwd '\Figures\sim3.png'])
