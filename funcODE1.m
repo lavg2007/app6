@@ -3,6 +3,8 @@ function f = funcODE1(t,y)
 % f = dy
 
 params
+
+
 r = R_mars + y(3);
 g = mu_mars/r^2;
 p = p0*exp(-y(3)/hs);

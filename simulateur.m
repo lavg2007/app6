@@ -52,7 +52,7 @@ saveas(gcf, [pwd '\Figures\sim1.png'])
 %% simulation 2
 
 disp('Simulation 2...')
-tspan = [0 108];
+tspan = [0 200];
 [t2 y2] = ode45('funcODE2', tspan, cond_ini);
 
 
@@ -235,3 +235,12 @@ xlim(tspan)
 grid on
 
 saveas(gcf, [pwd '\Figures\sim3.png'])
+
+
+%%
+
+figure
+hold on
+plot(t2,y2(:,8))
+plot(t2,Daero_sim2)
+grid on

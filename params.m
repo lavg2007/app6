@@ -28,5 +28,7 @@ r_fin = h_fin + R_mars;
 p0 = 0.0216;
 hs = 1.1004e+04;
 
+
+p_ini = p0*exp(-h_ini/hs);
 p_fin = p0*exp(-h_fin/hs);
 cond_ini = [v_ini gamma_ini h_ini s_ini theta_ini q_ini 0];

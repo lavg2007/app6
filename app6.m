@@ -21,7 +21,7 @@ p_ini = rho(h_ini);
 RAA = @(v_i, gamma, p) v_i*exp(0.5*B*hs*(p-p_ini)/sin(gamma));
 
 % RAA a angle de -90 pour comparaison avec les russes
-v = RAA(v_ini, -90, p_mes);
+v = RAA(v_ini, -pi/2, p_mes);
 
 
 Pdyn_RAA = 0.5*p_mes.*v.^2;
