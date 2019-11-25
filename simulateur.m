@@ -4,11 +4,11 @@ disp('Simulation 1...')
 
 tspan = [0 100];
 [t1 y1] = ode45('funcODE1', tspan, cond_ini);
-
+%%
 figure
 
 subplot(3,2,1)
-plot(t1,y1(:,2))
+plot(t1,rad2deg(y1(:,2)))
 xlabel('Temps (s)')
 ylabel('Gamma (deg)')
 
@@ -19,14 +19,14 @@ ylabel('Vitesse (m/s)')
 
 subplot(3,2,3)
 hold on
-plot(t1,y1(:,5))
-plot(t1,y1(:,5) - y1(:,2))
+plot(t1,rad2deg(y1(:,5)))
+plot(t1,rad2deg(y1(:,5) - y1(:,2)))
 xlabel('Temps (s)')
 ylabel('Angle (deg)')
 legend('\theta','\alpha')
 
 subplot(3,2,4)
-plot(t1,y1(:,6))
+plot(t1,rad2deg(y1(:,6)))
 xlabel('Temps (s)')
 ylabel('Vitesse angulaire (deg/s)')
 

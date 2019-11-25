@@ -19,7 +19,7 @@ Kp_theta = 5;
 f_theta = ((y(1)^2/r - g)*cos(y(2)) - P_dyn*S*C_La*y(2)/m)/y(1);
 g_theta = P_dyn*S*C_La/(m*y(1));
 theta_eq = -f_theta/g_theta;
-theta_cmd = theta_eq + Kp_theta*(gamma_ref-y(2));
+theta_cmd = theta_eq + Kp_theta*(gamma_ref-y(2))/g_theta;
 if abs(theta_cmd) > 1.0472
     theta_cmd = 1.0472*sign(theta_cmd);
 end
@@ -27,13 +27,12 @@ end
 Kp_delta = 400;
 Kd_delta = 28;
 f_delta = (P_dyn*S*d*(C_Ma*a + d*C_Mq*y(6)/(2*y(1))))/J;
-g_delta = P_dyn*S*d*C_Md;
+g_delta = P_dyn*S*d*C_Md/J;
 delta_eq = -f_delta/g_delta;
-delta_cmd = delta_eq + Kp_delta*(theta_cmd-y(5)) + Kd_delta*(0-y(6));
+delta_cmd = delta_eq + Kp_delta*(theta_cmd-y(5))/g_delta + Kd_delta*(0-y(6))/g_delta;
 
 D_aero = P_dyn*S*C_D0;
-a_cmd = theta_cmd-y(2);
-L_aero = P_dyn*S*C_La*a_cmd;
+L_aero = P_dyn*S*C_La*a;
 M_aero = P_dyn*S*d*(C_Ma*a + 0.5*d*C_Mq*y(6)/y(1) + C_Md*delta_cmd);
 
 f(1) = -D_aero/m - g*sin(y(2));
