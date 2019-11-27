@@ -2,7 +2,7 @@ function f = eqny_no(t,x)
 cte;
 hs = 1.100353042442160e+04;
 p0 = 0.021571989401399;
-pinit = p0 * exp(120000/hs);
+pinit = p0 * exp(-120000/hs);
 
 deltacmd = 0 ;                                                              % commande d'angle
 a = x(5) - x(2);                                                            % angle d'attaque
@@ -16,10 +16,10 @@ g = um/rf^2;                                                                % fo
 
 
 % Eqn de dynamique
-f(1) = -D/m - g*sind(x(2));
-f(2) = 1/x(1) * (L/m +(x(1)^2/rf-g)*cosd(x(2)));
-f(3) = x(1)*sind(x(2));
-f(4) = x(1)/rf * cosd(x(2));
+f(1) = -D/m - g*sin(x(2));
+f(2) = 1/x(1) * (L/m +(x(1)^2/rf-g)*cos(x(2)));
+f(3) = x(1)*sin(x(2));
+f(4) = x(1)/rf * cos(x(2));
 f(5) = x(6);
 f(6) =1/J *M;
 f(7) = D>2000;

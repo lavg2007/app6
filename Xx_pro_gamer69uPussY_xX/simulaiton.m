@@ -1,66 +1,293 @@
 %% simulation de APP6
-clear all
-close all
-clc
-cte;
-hs = 1.100353042442160e+04;
-p0 = 0.021571989401399;
+
+app6
+
 %% simulation comparaison avec les Russes
 % tspan = [0, 100];
 % z0_1 = [6100, -90,120000,0,-90,0,0]';
 % reltol1 = 1e-08;
 % options = odeset('abstol' ,1e-06, 'reltol', reltol1);
-% [TOUT,YOUT] = ode45('eqny_no',tspan,z0_1,options);
+% [t2,y2] = ode45('eqny_no',tspan,z0_1,options);
 % figure()
-% plot(TOUT,YOUT(:,3))
+% plot(t2,y2(:,3))
 % legend('v','y','h','s','theta','q')
+
+%% simulation sans asservissement
+hspan = [10 120];
+tspan = [0 100];
+z0_1 = [6100, deg2rad(-20.5),120000,0,deg2rad(-80),0,0]';
+reltol1 = 1e-08;
+% options = odeset('abstol' ,1e-06, 'reltol', reltol1);
+% [t1,y1] = ode45('eqny_no',tspan,z0_1,options);
+[t1,y1] = ode45('eqny_no',tspan,z0_1);
+figure
+subplot(3,1,1)
+plot(t1,rad2deg(y1(:,2)))
+xlabel('Temps (s)')
+ylabel('\gamma (deg)')
+title('Angles de la capsule')
+grid on
+
+subplot(3,1,2)
+hold on
+plot(t1,rad2deg(y1(:,5)))
+plot(t1,rad2deg(y1(:,5) - y1(:,2)))
+xlabel('Temps (s)')
+ylabel('Angle (deg)')
+legend('\theta','\alpha')
+grid on
+
+subplot(3,1,3)
+plot(t1,rad2deg(y1(:,6)))
+xlabel('Temps (s)')
+ylabel('q (deg/s)')
+grid on
+saveas(gcf, [pwd '\Figures\sim1_angles.png'])
+
+figure
+plot(y1(:,3)/1000,y1(:,1))
+xlabel('Altitude (km)')
+ylabel('Vitesse (m/s)')
+title('Vitesse de la capsule')
+grid on
+saveas(gcf, [pwd '\Figures\sim1_v_h.png'])
+
+Pdyn_sim1 = 0.5*p0*exp(-y1(:,3)/hs).*y1(:,1).^2;
+Daero_sim1 = Pdyn_sim1*S*Cdo;
+Laero_sim1 = Pdyn_sim1.*S.*Cla.*(y1(:,5)-y1(:,2));
+
+figure
+subplot(2,1,1)
+hold on
+plot(t1,Laero_sim1)
+plot(t1,Daero_sim1)
+xlabel('Temps (s)')
+ylabel('Force (N)')
+title('Forces agissant sur la capsule')
+legend('Portance (L_{aero})', 'Trainée (D_{aero})')
+grid on
+
+subplot(2,1,2)
+plot(t1,y1(:,7))
+xlabel('Temps (s)')
+ylabel('\Delta t_{lim} (s)')
+title('\Delta t_{lim} à D_{aero} > 2000 N')
+grid on
+saveas(gcf, [pwd '\Figures\sim1_force_tlim.png'])
+
+
+
 %% simulation avec compensation pour yref nominale
 tspan = [0, 200];
 z0_1 = [6100, deg2rad(-20.5),120000,0,deg2rad(-80),0,0]';
 reltol1 = 1e-08;
 options = odeset('abstol' ,1e-06, 'reltol', reltol1);
-[TOUT,YOUT] = ode45('eqnynominale',tspan,z0_1,options);
+[t2,y2] = ode45('eqnynominale',tspan,z0_1,options);
 % %%
 leg = ['v     ';'y     ';'h     ';'s     ';'\theta';'q     ';'daero '];
 
-figure()
-subplot(3,2,1)
-plot(TOUT,YOUT(:,2))
-legend('\gamma')
-xlabel('Temps')
-ylabel('gamma')
+tspan = [0 110];
 
-subplot(3,2,2)
-plot(YOUT(:,3),YOUT(:,1))
-legend('v')
-xlabel('h')
-ylabel('v')
 
-subplot(3,2,3)
+
+figure
+subplot(2,1,1)
+plot(t2,rad2deg(y2(:,2)))
+line(tspan, [rad2deg(yref.nominale(1)), rad2deg(yref.nominale(1))])
+xlim(tspan)
+ylim([-25 -10])
+xlabel('Temps (s)')
+ylabel('\gamma (deg)')
+title('Angle de vol')
+grid on
+
+subplot(2,1,2)
+plot(y2(:,3)/1000,rad2deg(y2(:,2)))
+xlabel('Altitude (km)')
+ylabel('\gamma (deg)')
+xlim(hspan)
+ylim([-25 -10])
+grid on
+saveas(gcf, [pwd '\Figures\sim2_gamma.png'])
+
+figure
+subplot(2,1,1)
+plot(t2,y2(:,1))
+xlabel('Temps (s)')
+ylabel('Vitesse (m/s)')
+xlim(tspan)
+title('vitesse')
+grid on
+
+subplot(2,1,2)
+plot(y2(:,3)/1000,y2(:,1))
+xlabel('Altitude (km)')
+ylabel('Vitesse (m/s)')
+xlim(hspan)
+grid on
+saveas(gcf, [pwd '\Figures\sim2_v.png'])
+
+figure
+plot(t2,y2(:,3)/1000)
+xlabel('Temps (s)')
+ylabel('Altitude (km)')
+title('Altitude de la capsule')
+xlim(tspan)
+grid on
+saveas(gcf, [pwd '\Figures\sim2_h.png'])
+
+figure
+subplot(2,1,1)
 hold on
-plot(TOUT,YOUT(:,5))
-plot(TOUT,YOUT(:,5)-YOUT(:,2))
+plot(t2,rad2deg(y2(:,5)))
+plot(t2,rad2deg(y2(:,5)-y2(:,2)))
+xlim(tspan)
+ylim([-90 90])
+xlabel('Temps (s)')
+ylabel('Angle (deg)')
 legend('\theta','\alpha')
-xlabel('h')
-ylabel('v')
+title('Angle d''attaque et de tanguage')
+grid on
 
-subplot(3,2,4)
-plot(TOUT,YOUT(:,6))
-legend('\dot{\theta}')
-xlabel('Temps')
-ylabel('vitesse angulaire')
+subplot(2,1,2)
+plot(t2, rad2deg(y2(:,6)))
+xlabel('Temps (s)')
+ylabel('Vitesse angulaire (deg)')
+ylim([-90 90])
+xlim(tspan)
+grid on
+saveas(gcf, [pwd '\Figures\sim2_angles.png'])
 
-Pdyn =  0.5 .* p0 .* exp(-YOUT(:,3)./hs).* YOUT(:,1).^2;  
-subplot(3,2,5)
+Pdyn_sim2 = 0.5*p0*exp(-y2(:,3)/hs).*y2(:,1).^2;
+Daero_sim2 = Pdyn_sim2*S*Cdo;
+Laero_sim2 = Pdyn_sim2.*S.*Cla.*(y2(:,5)-y2(:,2));
+
+figure
+subplot(2,1,1)
 hold on
-plot(TOUT,Pdyn.*S.*Cla.*(YOUT(:,5)-YOUT(:,2)))
-plot(TOUT,Pdyn.*S.*Cdo)
-legend('Portance','Trainee')
-xlabel('Temps')
-ylabel('Force(N)')
+plot(t2,Laero_sim2)
+plot(t2,Daero_sim2)
+xlabel('Temps (s)')
+ylabel('Force (N)')
+legend('Portance (L_{aero})', 'Trainée (D_{aero})')
+title('Forces agissant sur la capsule')
+xlim(tspan)
+grid on
+
+subplot(2,1,2)
+plot(t2,y2(:,7))
+xlabel('Temps (s)')
+title('\Delta t_{lim} à D_{aero} > 2000 N')
+xlim(tspan)
+grid on
+
+saveas(gcf, [pwd '\Figures\sim2_forces.png'])
+
+%% simulation avec compensation pour yref nominale
+tspan = [0, 200];
+z0_1 = [6100, deg2rad(-20.5),120000,0,deg2rad(-80),0,0]';
+reltol1 = 1e-08;
+options = odeset('abstol' ,1e-06, 'reltol', reltol1);
+[t3,y3] = ode45('eqnyideale',tspan,z0_1,options);
+% %%
+leg = ['v     ';'y     ';'h     ';'s     ';'\theta';'q     ';'daero '];
+
+tspan = [0 125];
+hspan = [10 120];
 
 
-subplot(3,2,6)
-plot(TOUT,YOUT(:,3))
-xlabel('Temps')
-ylabel('dTlim')
+figure
+subplot(2,1,1)
+plot(t3,rad2deg(y3(:,2)))
+line(tspan, [rad2deg(yref.nominale(1)), rad2deg(yref.nominale(1))])
+xlim(tspan)
+ylim([-25 -10])
+xlabel('Temps (s)')
+ylabel('\gamma (deg)')
+title('Angle de vol')
+grid on
+
+subplot(2,1,2)
+plot(y3(:,3)/1000,rad2deg(y3(:,2)))
+xlabel('Altitude (km)')
+ylabel('\gamma (deg)')
+xlim(hspan)
+ylim([-25 -10])
+grid on
+saveas(gcf, [pwd '\Figures\sim3_gamma.png'])
+
+figure
+subplot(2,1,1)
+plot(t3,y3(:,1))
+xlabel('Temps (s)')
+ylabel('Vitesse (m/s)')
+xlim(tspan)
+title('vitesse')
+grid on
+
+subplot(2,1,2)
+plot(y3(:,3)/1000,y3(:,1))
+xlabel('Altitude (km)')
+ylabel('Vitesse (m/s)')
+xlim(hspan)
+grid on
+saveas(gcf, [pwd '\Figures\sim3_v.png'])
+
+figure
+plot(t3,y3(:,3)/1000)
+xlabel('Temps (s)')
+ylabel('Altitude (km)')
+title('Altitude de la capsule')
+xlim(tspan)
+grid on
+saveas(gcf, [pwd '\Figures\sim3_h.png'])
+
+figure
+subplot(2,1,1)
+hold on
+plot(t3,rad2deg(y3(:,5)))
+plot(t3,rad2deg(y3(:,5)-y3(:,2)))
+xlim(tspan)
+ylim([-90 90])
+xlabel('Temps (s)')
+ylabel('Angle (deg)')
+legend('\theta','\alpha')
+title('Angle d''attaque et de tanguage')
+grid on
+
+subplot(2,1,2)
+plot(t3, rad2deg(y3(:,6)))
+xlabel('Temps (s)')
+ylabel('Vitesse angulaire (deg)')
+ylim([-90 90])
+xlim(tspan)
+grid on
+saveas(gcf, [pwd '\Figures\sim3_angles.png'])
+
+Pdyn_sim3 = 0.5*p0*exp(-y3(:,3)/hs).*y3(:,1).^2;
+Daero_sim3 = Pdyn_sim3*S*Cdo;
+Laero_sim3 = Pdyn_sim3.*S.*Cla.*(y3(:,5)-y3(:,2));
+
+figure
+subplot(2,1,1)
+hold on
+plot(t3,Laero_sim3)
+plot(t3,Daero_sim3)
+xlabel('Temps (s)')
+ylabel('Force (N)')
+legend('Portance (L_{aero})', 'Trainée (D_{aero})')
+title('Forces agissant sur la capsule')
+xlim(tspan)
+grid on
+
+subplot(2,1,2)
+plot(t3,y3(:,7))
+xlabel('Temps (s)')
+title('\Delta t_{lim} à D_{aero} > 2000 N')
+xlim(tspan)
+grid on
+
+saveas(gcf, [pwd '\Figures\sim3_forces.png'])
+
+
+

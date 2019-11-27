@@ -60,8 +60,8 @@ r = h+R_mars;
 deltaVaero = @(v_fin, v, h) v_fin - sqrt(v.^2 + 2*mu_mars*((1/r_fin)-(1./(h+R_mars))));
 gammaRef = @(dva,h,v) asin(0.5*B*hs*(p_fin-rho(h))/log(1+dva/v));
 
-d_v_a1 = deltaVaero(v_fin1, v_ini, h_fin);
-d_v_a2 = deltaVaero(v_fin2, v_ini, h_fin);
+d_v_a1 = deltaVaero(v_fin1, v_ini, h_ini);
+d_v_a2 = deltaVaero(v_fin2, v_ini, h_ini);
 
 gamma_ref1 = gammaRef(d_v_a1, h_ini, v_ini);
 gamma_ref2 = gammaRef(d_v_a2, h_ini, v_ini);

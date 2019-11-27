@@ -246,11 +246,11 @@ end
 % voir eqny
 %% simulation comparaison avec les Russes
 
-tspan = [0, 30];
-z0_1 = [6100, -90,120000,0,-90,0,0]';
-reltol1 = 1e-08;
-options = odeset('abstol' ,1e-06, 'reltol', reltol1);
-[TOUT,YOUT] = ode45('eqny_no',tspan,z0_1,options);
+% tspan = [0, 30];
+% z0_1 = [6100, -90,120000,0,-90,0,0]';
+% reltol1 = 1e-08;
+% options = odeset('abstol' ,1e-06, 'reltol', reltol1);
+% [TOUT,YOUT] = ode45('eqny_no',tspan,z0_1,options);
 % if plots(11)
 %     figure(11)
 %     plot( ,'-x')
